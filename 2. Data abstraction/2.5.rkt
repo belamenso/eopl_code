@@ -68,4 +68,19 @@
 
 (define k '(- - 3 2 - 4 - 12 7))
 
-(define (parse-rpn l) #f)
+(define (parse-rpn l)
+  ; returns first parsed (number or expression) and the remaining list
+  ; in a pair because no let-values in eopl lang
+  (cond
+    [(null? l) (eopl:error "Cannot parse an empty list")]
+    [(eq? '- (car l))
+     (let* ([r1 (parse-rpn (cdr l))]
+            [exp1 (car r1)]
+            [l (cdr r1)]
+            [r2 (parse-rpn l)]
+            [exp2 (car r2)]
+            [l (cdr r2)])
+       (cons (diff-exp exp1 exp2)
+             l))]
+    [else (cons (const-exp (car l))
+                (cdr l))]))
